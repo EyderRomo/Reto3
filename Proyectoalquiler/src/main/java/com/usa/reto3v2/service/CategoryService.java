@@ -3,7 +3,9 @@ package com.usa.reto3v2.service;
 import com.usa.reto3v2.entities.Category;
 import com.usa.reto3v2.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -16,60 +18,61 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public List<Category> getAll(){
+    public List<Category> getAll() {
         return categoryRepository.getAll();
     }
     //public List<Category> getAll(){
-        //return categoryRepository.getAll();
+    //return categoryRepository.getAll();
     //}
 
-    public Optional<Category> getCategory(int id){
+    public Optional<Category> getCategory(int id) {
         return categoryRepository.getCategory(id);
     }
-    public void save (Category categoria){
-        if(categoria.getId()==null){
-              categoryRepository.save(categoria);
-        }
-        else{
-            Optional<Category> c=categoryRepository.getCategory(categoria.getId());
-            if(c.isPresent()){
-                  c.get();
-            }
-            else{
-                  categoryRepository.save(categoria);
+
+    public Category save(Category categoria) {
+        if (categoria.getId() == null) {
+            return categoryRepository.save(categoria);
+        } else {
+            Optional<Category> c = categoryRepository.getCategory(categoria.getId());
+            if (c.isPresent()) {
+                return categoria;
+            } else {
+                return categoryRepository.save(categoria);
             }
         }
     }
 
-    public Category update(Category categoria){
-        if(categoria.getId()!=null){
-            Optional<Category> ct =categoryRepository.getCategory(categoria.getId());
-            if(ct.isPresent()){
-                if(categoria.getName()!=null){
+    public Category update(Category categoria) {
+        if (categoria.getId() != null) {
+            Optional<Category> ct = categoryRepository.getCategory(categoria.getId());
+            if (ct.isPresent()) {
+                if (categoria.getName() != null) {
                     ct.get().setName(categoria.getName());
                 }
-                if(categoria.getDescription()!=null){
+                if (categoria.getDescription() != null) {
                     ct.get().setDescription(categoria.getDescription());
                 }
+                if (categoria.getMotorbikes() != null) {
+                    ct.get().setMotorbikes(categoria.getMotorbikes());
+                }
                 categoryRepository.save(ct.get());
-                return  ct.get();
-            }
-            else{
+                return ct.get();
+            } else {
                 return categoria;
             }
-        }
-        else {
+        } else {
             return categoria;
         }
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean delete(int id){
-        boolean marca=false;
-        Optional<Category> ctr=categoryRepository.getCategory(id);
-        if(ctr.isPresent()){
-            categoryRepository.delete(ctr.get());
-            marca=true;
+        boolean flag=false;
+        Optional<Category>p= categoryRepository.getCategory(id);
+        if(p.isPresent()){
+            categoryRepository.delete(p.get());
+            flag=true;
         }
-        return  marca;
+        return flag;
     }
 }

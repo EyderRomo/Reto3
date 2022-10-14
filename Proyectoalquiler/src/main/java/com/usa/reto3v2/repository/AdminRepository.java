@@ -12,19 +12,22 @@ import java.util.Optional;
 @Repository
 public class AdminRepository {
 
-    @Autowired
+@Autowired
     private AdminCrudRepository adminCrudRepository;
 
-    public List<Admin> getAll(){
+    public List<Admin> getAll() {
         return (List<Admin>) adminCrudRepository.findAll();
     }
-    public Optional<Admin> getAdmin(int id){
+
+    public Optional<Admin> getAdmin(int id) {
         return adminCrudRepository.findById(id);
     }
-    public Admin save(Admin administrador){
+
+    public Admin save(Admin administrador) {
         return adminCrudRepository.save(administrador);
     }
-    public void delete(Admin administrador){
+
+    public void delete(Admin administrador) {
         adminCrudRepository.delete(administrador);
     }
 }

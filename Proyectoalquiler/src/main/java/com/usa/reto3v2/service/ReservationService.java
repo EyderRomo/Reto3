@@ -3,7 +3,9 @@ package com.usa.reto3v2.service;
 import com.usa.reto3v2.entities.Reservation;
 import com.usa.reto3v2.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -15,65 +17,71 @@ public class ReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
-    public List<Reservation> getAll(){
+
+    public List<Reservation> getAll() {
         return reservationRepository.getAll();
     }
 
-    public Optional<Reservation> getReservation(int id){
+    public Optional<Reservation> getReservation(int id) {
         return reservationRepository.getReservation(id);
     }
 
-    public void save(Reservation reservacion){
-        if(reservacion.getIdReservation()==null){
-              reservationRepository.save(reservacion);
-        }
-        else {
-            Optional<Reservation> a =reservationRepository.getReservation(reservacion.getIdReservation());
-            if(a.isPresent()){
-                  a.get();
-            }
-            else{
-                   reservationRepository.save(reservacion);
+    public Reservation save(Reservation reservacion) {
+        if (reservacion.getIdReservation() == null) {
+            return reservationRepository.save(reservacion);
+        } else {
+            Optional<Reservation> a = reservationRepository.getReservation(reservacion.getIdReservation());
+            if (a.isPresent()) {
+                return reservacion;
+            } else {
+                return reservationRepository.save(reservacion);
             }
         }
     }
-    public Reservation Update(Reservation reservacion){
-        if(reservacion.getIdReservation() != null){
-            Optional<Reservation> rs =reservationRepository.getReservation(reservacion.getIdReservation());
-            if(rs.isPresent()){
-                if(reservacion.getStartDate()!=null){
+
+    public Reservation update(Reservation reservacion) {
+        if (reservacion.getIdReservation() != null) {
+            Optional<Reservation> rs = reservationRepository.getReservation(reservacion.getIdReservation());
+            if (rs.isPresent()) {
+                if (reservacion.getStartDate() != null) {
                     rs.get().setStartDate(reservacion.getStartDate());
                 }
-                if(reservacion.getDevolutionDate()!=null){
+                if (reservacion.getDevolutionDate() != null) {
                     rs.get().setDevolutionDate(reservacion.getDevolutionDate());
                 }
-                if(reservacion.getStatus()!=null){
-                   rs.get().setStatus(reservacion.getStatus());
+                if (reservacion.getStatus() != null) {
+                    rs.get().setStatus(reservacion.getStatus());
                 }
-                if(reservacion.getScore()!=0){
+                if (reservacion.getScore() != null) {
                     rs.get().setScore(reservacion.getScore());
                 }
+                if (reservacion.getMotorbike() != null) {
+                    rs.get().setMotorbike(reservacion.getMotorbike());
+                }
+                if (reservacion.getClient() != null) {
+                    rs.get().setClient(reservacion.getClient());
+                }
+
 
                 reservationRepository.save(rs.get());
                 return rs.get();
 
-            }
-            else{
+            } else {
                 return reservacion;
             }
-        }
-        else{
+        } else {
             return reservacion;
         }
     }
-    public boolean delete(int id){
-        boolean marca=false;
-        Optional<Reservation> a =reservationRepository.getReservation(id);
-        if(a.isPresent()){
-            reservationRepository.delete(a.get());
-            marca=true;
-        }
-        return marca;
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public boolean delete(int id){
+        boolean flag=false;
+        Optional<Reservation>p= reservationRepository.getReservation(id);
+        if(p.isPresent()){
+            reservationRepository.delete(p.get());
+            flag=true;
+        }
+        return flag;
     }
 }
